@@ -12,10 +12,10 @@ use Carbon\Carbon;
 
 class FollowupController extends Controller
 {
-    public function search($userId, $name): JsonResponse
+    public function search(Request $request, $userId): JsonResponse
 {
     $userFollowups = Followup::where('user_id', $userId)
-        ->where('name', 'like', '%' . $name . '%')
+        ->where('name', 'like', '%' . $request->name . '%')
         ->get();
 
     if ($userFollowups->isEmpty()) {
