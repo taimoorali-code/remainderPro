@@ -1,8 +1,6 @@
 <?php
-
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -22,7 +20,7 @@ class User extends Authenticatable
         'email',
         'country',
         'phone',
-
+        'image',
         'password',
     ];
 
@@ -45,4 +43,27 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    /**
+     * Update user information.
+     *
+     * @param array $data
+     * @return bool
+     */
+    public function updateUser(array $data): bool
+    {
+        return $this->update($data);
+    }
+
+    /**
+     * Store user profile image.
+     *
+     * @param string $imagePath
+     * @return bool
+     */
+    public function storeProfileImage(string $imagePath): bool
+    {
+        $this->image = $imagePath;
+        return $this->save();
+    }
 }

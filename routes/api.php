@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\FollowupController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,10 +20,18 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// get user details
+Route::post('/getUserInfo/{userId}', [UserController::class, 'filterFollowups']); // Get all follow-ups
+Route::get('/users/{id}', [UserController::class, 'getUserById']);
+Route::put('/users/{id}', [UserController::class, 'update']); // Update user information
+Route::post('/users/{id}/upload-profile-image', [UserController::class, 'uploadProfileImage']); // Upload profile image
+
+
 
 // Route::post('/followup', [FollowupController::class, 'store']);
-Route::post('/filterfollowup', [FollowupController::class, 'filterFollowups']); // Get all follow-ups
-
+    Route::post('/filterfollowup', [FollowupController::class, 'filterFollowups']); // Get all follow-ups
+    Route::get('/followups/done', [FollowupController::class, 'doneFollowups']);
+    Route::get('/followups/deleted', [FollowupController::class, 'deletedFollowups']);
     Route::get('/followup', [FollowupController::class, 'index']); // Get all follow-ups
     Route::get('/followup/show/{userId}', [FollowupController::class, 'show']); // Get a specific follow-up
     Route::post('/followup/create', [FollowupController::class, 'store']); // Create a new follow-up

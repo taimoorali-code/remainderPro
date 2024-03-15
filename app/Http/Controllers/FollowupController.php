@@ -106,6 +106,19 @@ class FollowupController extends Controller
 
         return response()->json(['filtered_followups' => $filteredFollowups]);
     }
+    public function doneFollowups(): JsonResponse
+    {
+        $doneFollowups = Followup::where('status', 'success')->get();
+
+        return response()->json(['done_followups' => $doneFollowups]);
+    }
+
+    public function deletedFollowups(): JsonResponse
+    {
+        $deletedFollowups = Followup::onlyTrashed()->get();
+
+        return response()->json(['deleted_followups' => $deletedFollowups]);
+    }
 
 
     // Add other CRUD methods like show, update, destroy as needed
