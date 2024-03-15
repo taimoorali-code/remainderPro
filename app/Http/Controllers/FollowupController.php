@@ -12,6 +12,28 @@ use Carbon\Carbon;
 
 class FollowupController extends Controller
 {
+    public function search($userId, $name): JsonResponse
+{
+    $userFollowups = Followup::where('user_id', $userId)
+        ->where('name', 'like', '%' . $name . '%')
+        ->get();
+
+    if ($userFollowups->isEmpty()) {
+        return response()->json(['message' => 'Follow-ups not found for the specified user and name'], 404);
+    }
+
+    // Additional details
+    $todayFollowups = $userFollowups->where('follow_date', today())->count();
+    $pastFollowups = $userFollowups->where('follow_date', '<', now())->count();
+    $tomorrowFollowups = $userFollowups->where('follow_date', Carbon::tomorrow())->count();
+
+    return response()->json([
+        'user_followups' => $userFollowups,
+        'today_followups' => $todayFollowups,
+        'past_followups' => $pastFollowups,
+        'tomorrow_followups' => $tomorrowFollowups,
+    ]);
+}
 
     public function show($userId): JsonResponse
     {

@@ -34,6 +34,7 @@ Route::post('/uploadprofileimage/{id}', [UserController::class, 'uploadProfileIm
     Route::get('/followups/deleted', [FollowupController::class, 'deletedFollowups']);
     Route::get('/followup', [FollowupController::class, 'index']); // Get all follow-ups
     Route::get('/followup/show/{userId}', [FollowupController::class, 'show']); // Get a specific follow-up
+    Route::get('/followup/search/{userId}/{name}', [FollowupController::class, 'search']);
     Route::post('/followup/create', [FollowupController::class, 'store']); // Create a new follow-up
     Route::put('/followup/update/{id}', [FollowupController::class, 'update']); // Update a follow-up
     Route::delete('/followup/delete/{id}', [FollowupController::class, 'destroy']); // Delete a follow-up
