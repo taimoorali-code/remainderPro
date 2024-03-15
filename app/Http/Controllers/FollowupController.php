@@ -74,7 +74,7 @@ class FollowupController extends Controller
         $followup->update($request->all());
 
         return response()->json(['message' => 'Follow-up updated successfully', 'followup' => $followup]);
-    }
+}
     public function destroy($id): JsonResponse
     {
         $followup = Followup::findOrFail($id);
@@ -82,7 +82,7 @@ class FollowupController extends Controller
 
         return response()->json(['message' => 'Follow-up deleted successfully']);
     }
-    public function filterFollowups(Request $request): JsonResponse
+    public function filterFollowups(Request $request, $userId): JsonResponse
     {
         $request->validate([
             'from_date' => ['required', 'date'],
@@ -91,21 +91,28 @@ class FollowupController extends Controller
             'state' => ['required', 'string'],
             'city' => ['required', 'string'],
         ]);
-
+    
         $fromDate = $request->input('from_date');
         $toDate = $request->input('to_date');
         $country = $request->input('country');
         $state = $request->input('state');
         $city = $request->input('city');
-
-        $filteredFollowups = Followup::whereBetween('follow_date', [$fromDate, $toDate])
+    
+        $filteredFollowups = Followup::where('user_id', $userId)
+            ->whereBetween('follow_date', [$fromDate, $toDate])
             ->where('country', $country)
             ->where('state', $state)
             ->where('city', $city)
             ->get();
-
+    
+        if ($filteredFollowups->isEmpty()) {
+            return response()->json(['message' => 'No follow-ups found for the specified user and criteria'], 404);
+        }
+    
         return response()->json(['filtered_followups' => $filteredFollowups]);
     }
+    
+    
     public function doneFollowups(): JsonResponse
     {
         $doneFollowups = Followup::where('status', 'success')->get();

@@ -29,7 +29,7 @@ Route::post('/users/{id}/upload-profile-image', [UserController::class, 'uploadP
 
 
 // Route::post('/followup', [FollowupController::class, 'store']);
-    Route::post('/filterfollowup', [FollowupController::class, 'filterFollowups']); // Get all follow-ups
+    Route::post('/filterfollowup/{userId}', [FollowupController::class, 'filterFollowups']); // Get all follow-ups
     Route::get('/followups/done', [FollowupController::class, 'doneFollowups']);
     Route::get('/followups/deleted', [FollowupController::class, 'deletedFollowups']);
     Route::get('/followup', [FollowupController::class, 'index']); // Get all follow-ups
