@@ -24,7 +24,7 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 Route::post('/getUserInfo/{userId}', [UserController::class, 'filterFollowups']); // Get all follow-ups
 Route::get('/users/{id}', [UserController::class, 'getUserById']);
 Route::put('/users/{id}', [UserController::class, 'update']); // Update user information
-Route::post('/users/{id}/upload-profile-image', [UserController::class, 'uploadProfileImage']); // Upload profile image
+Route::post('/uploadprofileimage/{id}', [UserController::class, 'uploadProfileImage']); // Upload profile image
 
 
 
