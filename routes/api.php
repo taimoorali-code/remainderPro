@@ -21,6 +21,8 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 
 
 // Route::post('/followup', [FollowupController::class, 'store']);
+Route::post('/filterfollowup', [FollowupController::class, 'filterFollowups']); // Get all follow-ups
+
     Route::get('/followup', [FollowupController::class, 'index']); // Get all follow-ups
     Route::get('/followup/show/{userId}', [FollowupController::class, 'show']); // Get a specific follow-up
     Route::post('/followup/create', [FollowupController::class, 'store']); // Create a new follow-up

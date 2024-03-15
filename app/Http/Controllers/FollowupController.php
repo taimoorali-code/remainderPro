@@ -12,14 +12,10 @@ use Carbon\Carbon;
 
 class FollowupController extends Controller
 {
-    public function index(): JsonResponse
-    {
-        $followups = Followup::all();
-        return response()->json($followups);
-    }
+
     public function show($userId): JsonResponse
     {
-        $userFollowups = Followup::where('user_id', $userId)->get();
+        $userFollowups = Followup::where('user_id', $userId)->get(); // Add ->get() to execute the query
     
         if ($userFollowups->isEmpty()) {
             return response()->json(['message' => 'Follow-ups not found for the specified user'], 404);
@@ -86,6 +82,31 @@ class FollowupController extends Controller
 
         return response()->json(['message' => 'Follow-up deleted successfully']);
     }
+    public function filterFollowups(Request $request): JsonResponse
+    {
+        $request->validate([
+            'from_date' => ['required', 'date'],
+            'to_date' => ['required', 'date', 'after_or_equal:from_date'],
+            'country' => ['required', 'string'],
+            'state' => ['required', 'string'],
+            'city' => ['required', 'string'],
+        ]);
+
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
+        $country = $request->input('country');
+        $state = $request->input('state');
+        $city = $request->input('city');
+
+        $filteredFollowups = Followup::whereBetween('follow_date', [$fromDate, $toDate])
+            ->where('country', $country)
+            ->where('state', $state)
+            ->where('city', $city)
+            ->get();
+
+        return response()->json(['filtered_followups' => $filteredFollowups]);
+    }
+
 
     // Add other CRUD methods like show, update, destroy as needed
 }
