@@ -36,14 +36,17 @@ class UserController extends Controller
     public function uploadProfileImage(Request $request, $userId): JsonResponse
     {
         $user = User::findOrFail($userId);
-
+    
         $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'required|image',
         ]);
-
+    
         $imagePath = $request->file('image')->store('public/profile_images');
         $user->storeProfileImage($imagePath);
-
-        return response()->json(['message' => 'Profile image uploaded successfully', 'user' => $user]);
+    
+        $imageUrl = asset('storage/profile_images/' . basename($imagePath));
+    
+        return response()->json(['message' => 'Profile image uploaded successfully', 'imageUrl' => $imageUrl]);
     }
+    
 }

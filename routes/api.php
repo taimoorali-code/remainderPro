@@ -31,7 +31,7 @@ Route::post('/uploadprofileimage/{id}', [UserController::class, 'uploadProfileIm
 // Route::post('/followup', [FollowupController::class, 'store']);
     Route::post('/filterfollowup/{userId}', [FollowupController::class, 'filterFollowups']); // Get all follow-ups
     Route::get('/followups/done', [FollowupController::class, 'doneFollowups']);
-    Route::get('/followups/deleted', [FollowupController::class, 'deletedFollowups']);
+    Route::get('/followups/deleted/{userId}', [FollowupController::class, 'deletedFollowups']);
     Route::get('/followup', [FollowupController::class, 'index']); // Get all follow-ups
     Route::get('/followup/show/{userId}', [FollowupController::class, 'show']); // Get a specific follow-up
     Route::get('/followup/search/{userId}', [FollowupController::class, 'search']);

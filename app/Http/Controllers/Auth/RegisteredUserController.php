@@ -13,11 +13,6 @@ use Illuminate\Validation\ValidationException;
 
 class RegisteredUserController extends Controller
 {
-    /**
-     * Handle an incoming registration request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
     public function store(Request $request): JsonResponse
     {
         try {
@@ -40,15 +35,11 @@ class RegisteredUserController extends Controller
             return response()->json([
                 'message' => 'User created successfully',
                 'user' => $user,
-                // 'authorization' => [
-                //     // 'token' => $user->createToken('ApiToken')->plainTextToken,
-                //     'type' => 'bearer',
-                // ]
             ]);
         } catch (ValidationException $e) {
-            // Handle unique validation exception
+            // Handle validation exception
             return response()->json([
-                'error' => 'User with the provided email already exists.',
+                'error' => $e->validator->errors()->first(),
             ], JsonResponse::HTTP_CONFLICT);
         }
     }

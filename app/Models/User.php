@@ -62,8 +62,8 @@ class User extends Authenticatable
      * @return bool
      */
     public function storeProfileImage(string $imagePath): bool
-    {
-        $this->image = $imagePath;
-        return $this->save();
-    }
+{
+    $this->image = $imagePath; // Store relative path
+    return $this->save();
+}
 }
