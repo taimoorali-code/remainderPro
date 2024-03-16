@@ -30,7 +30,6 @@ class RegisteredUserController extends Controller
                 'country' => $request->country,
                 'phone' => $request->phone,
                 'dial_code' => $request->dial_code,
-
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
             ]);
