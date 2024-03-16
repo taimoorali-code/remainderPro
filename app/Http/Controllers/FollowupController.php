@@ -86,6 +86,7 @@ class FollowupController extends Controller
             'phone' => 'string|max:255',
             'address' => 'string|max:255',
             'note' => 'string',
+            'dial_code' => 'string',
             'status' => 'string|max:255',
             'follow_date' => 'date',
             'country' => 'string|max:255',

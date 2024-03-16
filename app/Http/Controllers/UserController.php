@@ -23,6 +23,7 @@ class UserController extends Controller
         
         $data = $request->validate([
             'name' => 'string|max:255',
+            'dial_code' => 'string',
             'email' => 'email|unique:users,email,' . $userId,
             'country' => 'string|max:255',
             'phone' => 'string|max:255',
