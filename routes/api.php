@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\FollowupController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -19,6 +20,9 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
+
+//Feedbacks
+Route::post('/storeFeedbacks', [FeedbackController::class, 'store']); // Get all follow-ups
 
 // get user details
 Route::post('/getUserInfo/{userId}', [UserController::class, 'filterFollowups']); // Get all follow-ups

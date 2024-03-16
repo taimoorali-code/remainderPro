@@ -42,9 +42,10 @@ class UserController extends Controller
         ]);
     
         $imagePath = $request->file('image')->store('public/profile_images');
-        $user->storeProfileImage($imagePath);
+        $imageUrl = asset('storage/app/public/profile_images/' . basename($imagePath));
+
+        $user->storeProfileImage($imageUrl);
     
-        $imageUrl = asset('storage/profile_images/' . basename($imagePath));
     
         return response()->json(['message' => 'Profile image uploaded successfully', 'imageUrl' => $imageUrl]);
     }
