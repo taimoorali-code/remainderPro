@@ -85,7 +85,7 @@ class PasswordResetController extends Controller
         PasswordReset::where('created_at', '<=',$formated)->delete();
     
     $validator = Validator::make($request->all(), [
-        'otp' => 'required|numeric',
+        'otp' => 'required',
     ]);
 
     if ($validator->fails()) {
@@ -93,7 +93,7 @@ class PasswordResetController extends Controller
     }
 
     $otp = $request->otp;
-    $passwordReset = PasswordReset::where('token', $otp)->first();
+    $passwordReset = PasswordReset::where('token', $otp);
 
     if (!$passwordReset) {
         return response()->json(['message' => 'Invalid OTP'], 404);
@@ -101,7 +101,7 @@ class PasswordResetController extends Controller
 
     // Additional checks can be performed here
 
-    $passwordReset->delete(); // Delete the OTP record
+    // $passwordReset->delete(); // Delete the OTP record
 
     return response()->json(['message' => 'OTP verified successfully'], 200);
 }
@@ -129,6 +129,8 @@ public function resetPassword(Request $request)
     $user->save();
 
     // Optionally, you may want to delete the existing password reset record
+      PasswordReset::where('email', $user->email)->delete();
+
 
     return response()->json(['message' => 'Password reset successfully'], 200);
 }
