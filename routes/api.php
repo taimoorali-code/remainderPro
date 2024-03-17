@@ -32,7 +32,8 @@ Route::post('email/verify/{id}', [VerificationController::class, 'verify'])
 
 
 Route::post('/forgotpassword', [PasswordResetController::class, 'send_reset_password_email']); // Get all follow-ups
-Route::post('/resetpassword/{token}', [PasswordResetController::class, 'reset']); // Get all follow-ups
+Route::post('/verifypassword', [PasswordResetController::class, 'reset']); // Get all follow-ups
+Route::post('/resetpassword', [PasswordResetController::class, 'resetPassword']); // Get all follow-ups
 
 
 

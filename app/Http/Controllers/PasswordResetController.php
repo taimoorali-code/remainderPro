@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
 
 class PasswordResetController extends Controller
 {
@@ -45,36 +46,92 @@ class PasswordResetController extends Controller
         ], 200);
     }
 
-    public function reset(Request $request, $token)
-    {
-        $formated= Carbon::now()->subMinutes(1)
-        ->toDateString();
-        PasswordReset::where('created_at', '<=',$formated)->delete();
+    // public function reset(Request $request, $token)
+    // {
+    //     $formated= Carbon::now()->subMinutes(1)
+    //     ->toDateString();
+    //     PasswordReset::where('created_at', '<=',$formated)->delete();
 
-        $request->validate([
-            'password' => 'required',
-        ]);
+    //     $request->validate([
+    //         'password' => 'required',
+    //     ]);
       
 
-        $passwordReset = PasswordReset::where('token', $token)->first();
+    //     $passwordReset = PasswordReset::where('token', $token)->first();
 
-        if (!$passwordReset) {
-            return response()->json(['message' => 'Invalid token'], 404);
-        }
+    //     if (!$passwordReset) {
+    //         return response()->json(['message' => 'Invalid token'], 404);
+    //     }
 
-        $user = User::where('email', $passwordReset->email)->first();
+    //     $user = User::where('email', $passwordReset->email)->first();
 
-        if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
-        }
+    //     if (!$user) {
+    //         return response()->json(['message' => 'User not found'], 404);
+    //     }
 
-        $user->password = Hash::make($request->password);
-        $user->save();
+    //     $user->password = Hash::make($request->password);
+    //     $user->save();
 
-        PasswordReset::where('email', $user->email)->delete();
+    //     PasswordReset::where('email', $user->email)->delete();
 
 
-        return response()->json(['message' => 'Password reset successfully'], 200);
+    //     return response()->json(['message' => 'Password reset successfully'], 200);
+    // }
+    public function reset(Request $request)
+{
+
+    $formated= Carbon::now()->subMinutes(1)
+        ->toDateString();
+        PasswordReset::where('created_at', '<=',$formated)->delete();
+    
+    $validator = Validator::make($request->all(), [
+        'otp' => 'required|numeric',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json(['error' => $validator->errors()->first()], 400);
     }
+
+    $otp = $request->otp;
+    $passwordReset = PasswordReset::where('token', $otp)->first();
+
+    if (!$passwordReset) {
+        return response()->json(['message' => 'Invalid OTP'], 404);
+    }
+
+    // Additional checks can be performed here
+
+    $passwordReset->delete(); // Delete the OTP record
+
+    return response()->json(['message' => 'OTP verified successfully'], 200);
+}
+
+public function resetPassword(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'email' => 'required|email',
+        'password' => 'required|min:6',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json(['error' => $validator->errors()->first()], 400);
+    }
+
+    $email = $request->email;
+    $user = User::where('email', $email)->first();
+
+    if (!$user) {
+        return response()->json(['message' => 'User not found'], 404);
+    }
+
+    // Update the user's password
+    $user->password = Hash::make($request->password);
+    $user->save();
+
+    // Optionally, you may want to delete the existing password reset record
+
+    return response()->json(['message' => 'Password reset successfully'], 200);
+}
+
 }
 ?>
