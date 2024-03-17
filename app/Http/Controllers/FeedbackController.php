@@ -13,6 +13,7 @@ class FeedbackController extends Controller
             'name' => 'required|string',
             'email' => 'required|email',
             'dial_code' => 'required|string',
+            'country' => 'required|string',
             'mobile_number' => 'required|string',
             'feedback' => 'required|string',
         ]);
@@ -21,6 +22,7 @@ class FeedbackController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'dial_code' => $request->dial_code,
+            'country' => $request->country,
             'mobile_number' => $request->mobile_number,
             'feedback' => $request->feedback,
         ]);

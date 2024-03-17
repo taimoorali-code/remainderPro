@@ -13,6 +13,6 @@ class Feedback extends Model
     protected $table = 'feedbacks'; // Add this line to specify the table name
 
 
-    protected $fillable = ['name', 'email', 'dial_code', 'mobile_number', 'feedback'];
+    protected $fillable = ['name', 'email', 'dial_code', 'country','mobile_number', 'feedback'];
 }
 ?>

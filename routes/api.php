@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\FollowupController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\VerificationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -26,6 +27,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 
 //AUth
+Route::post('email/verify/{id}', [VerificationController::class, 'verify'])
+    ->name('verification.verify');
+
 
 Route::post('/forgotpassword', [PasswordResetController::class, 'send_reset_password_email']); // Get all follow-ups
 Route::post('/resetpassword/{token}', [PasswordResetController::class, 'reset']); // Get all follow-ups

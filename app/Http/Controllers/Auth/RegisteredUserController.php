@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class RegisteredUserController extends Controller
 {
@@ -24,22 +27,29 @@ class RegisteredUserController extends Controller
                 'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
                 'password' => ['required', 'confirmed', Rules\Password::defaults()],
             ]);
+            $email= $request->email;
+            $token = rand(10000, 99999);
+
 
             $user = User::create([
                 'name' => $request->name,
                 'country' => $request->country,
+                'verification_code' =>$token,
                 'phone' => $request->phone,
                 'dial_code' => $request->dial_code,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
             ]);
-            $token = $user->createToken($request->email)->plainTextToken;
+            // $token = $user->createToken($request->email)->plainTextToken;
+            Mail::send('reset', ['token' => $token], function ($message) use ($email) {
+                $message->subject('Verify Your Email');
+                $message->to($email);
+            });
            
             return response()->json([
-                'message' => 'User created successfully',
+                'message' => 'User registered successfully. Please verify your email.',
                 'user' => $user,
-                'token'=> $token
-            ]);
+            ], 201);
         } catch (ValidationException $e) {
             // Handle validation exception
             return response()->json([
