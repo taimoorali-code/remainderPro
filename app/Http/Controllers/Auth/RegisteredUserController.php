@@ -64,24 +64,28 @@ class RegisteredUserController extends Controller
                 'email' => ['required', 'string', 'email', 'max:255'],
                 'password' => ['required', 'string'],
             ]);
-
-            if (!Auth::attempt($request->only('email', 'password'))) {
+    
+            $credentials = $request->only('email', 'password');
+    
+            if (!Auth::attempt($credentials)) {
                 return response()->json(['error' => 'Invalid credentials'], JsonResponse::HTTP_UNAUTHORIZED);
             }
-
+    
             $user = $request->user();
+    
+            if (!$user->hasVerifiedEmail()) {
+                return response()->json(['error' => 'Email not verified'], JsonResponse::HTTP_FORBIDDEN);
+            }
+    
             $token = $user->createToken($user->email)->plainTextToken;
-
+    
             return response()->json([
                 'message' => 'Login successful',
                 'user' => $user,
                 'token' => $token,
             ]);
         } catch (ValidationException $e) {
-            // Handle validation exception
-            return response()->json([
-                'error' => $e->validator->errors()->first(),
-            ], JsonResponse::HTTP_BAD_REQUEST);
+            return response()->json(['error' => $e->validator->errors()->first()], JsonResponse::HTTP_BAD_REQUEST);
         }
     }
     public function logout()
