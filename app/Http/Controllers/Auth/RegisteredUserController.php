@@ -31,15 +31,15 @@ class RegisteredUserController extends Controller
             $token = rand(10000, 99999);
 
 
-            $user = User::create([
-                'name' => $request->name,
-                'country' => $request->country,
-                'verification_code' =>$token,
-                'phone' => $request->phone,
-                'dial_code' => $request->dial_code,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-            ]);
+            // $user = User::create([
+            //     'name' => $request->name,
+            //     'country' => $request->country,
+            //     'verification_code' =>$token,
+            //     'phone' => $request->phone,
+            //     'dial_code' => $request->dial_code,
+            //     'email' => $request->email,
+            //     'password' => Hash::make($request->password),
+            // ]);
             // $token = $user->createToken($request->email)->plainTextToken;
             Mail::send('reset', ['token' => $token], function ($message) use ($email) {
                 $message->subject('Verify Your Email');
@@ -48,6 +48,38 @@ class RegisteredUserController extends Controller
            
             return response()->json([
                 'message' => 'User registered successfully. Please verify your email.',
+                // 'user' => $user,
+            ], 201);
+        } catch (ValidationException $e) {
+            // Handle validation exception
+            return response()->json([
+                'error' => $e->validator->errors()->first(),
+            ], JsonResponse::HTTP_CONFLICT);
+        }
+    }
+    public function registeruser(Request $request){
+        try {
+            $request->validate([
+                'name' => ['required', 'string', 'max:255'],
+                'country' => ['required', 'string', 'max:255'],
+                'dial_code' => ['required', 'string'],
+                'phone' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+                'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            ]);
+
+
+            $user = User::create([
+                'name' => $request->name,
+                'country' => $request->country,
+                'phone' => $request->phone,
+                'dial_code' => $request->dial_code,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
+           
+            return response()->json([
+                'message' => 'User registered successfully',
                 'user' => $user,
             ], 201);
         } catch (ValidationException $e) {
@@ -56,6 +88,7 @@ class RegisteredUserController extends Controller
                 'error' => $e->validator->errors()->first(),
             ], JsonResponse::HTTP_CONFLICT);
         }
+
     }
     public function login(Request $request): JsonResponse
     {

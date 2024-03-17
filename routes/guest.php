@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [RegisteredUserController::class, 'store'])
                 ->name('register');
+Route::post('/signup', [RegisteredUserController::class, 'registeruser']);
 
 // Route::post('/login', [UserLoginController::class, 'store']);
                
