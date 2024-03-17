@@ -67,4 +67,5 @@ class User extends Authenticatable
     $this->image = $imagePath; // Store relative path
     return $this->save();
 }
+
 }

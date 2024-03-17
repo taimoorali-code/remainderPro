@@ -66,6 +66,7 @@ class FollowupController extends Controller
             'name' => ['required', 'string'],
             'user_id' => ['required'],
             'phone' => ['required', 'string'],
+            'dial_code' => ['required', 'string'],
             'address' => ['required', 'string'],
             'note' => ['nullable', 'string'],
             'status' => ['required', 'string'],

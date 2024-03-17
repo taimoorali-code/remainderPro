@@ -17,6 +17,7 @@ class Followup extends Model
         'name',
         'user_id',
         'phone',
+        'dial_code',
         'address',
         'note',
         'status',

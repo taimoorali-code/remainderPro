@@ -7,6 +7,16 @@ use Illuminate\Http\JsonResponse;
 
 class UserController extends Controller
 {
+    public function sendverifyemail($email)
+    {
+        if (auth()->user()) {
+            return response()->json(['success' => 'User is authenticated']);
+
+        }else{
+            return response()->json(['error' => 'hello User is not authenticated']);
+        }
+
+    }
     public function getUserById($userId): JsonResponse
     {
         $user = User::find($userId);

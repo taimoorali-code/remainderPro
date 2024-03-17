@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\FollowupController;
 use App\Http\Controllers\UserController;
@@ -17,9 +19,19 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::post('/logout', [RegisteredUserController::class, 'logout'])
+                ->name('logout');
 });
+
+
+//AUth
+
+Route::post('/forgotpassword', [PasswordResetController::class, 'send_reset_password_email']); // Get all follow-ups
+Route::post('/resetpassword/{token}', [PasswordResetController::class, 'reset']); // Get all follow-ups
+
+
+
 
 //Feedbacks
 Route::post('/storeFeedbacks', [FeedbackController::class, 'store']); // Get all follow-ups

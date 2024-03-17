@@ -33,10 +33,12 @@ class RegisteredUserController extends Controller
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
             ]);
+            $token = $user->createToken($request->email)->plainTextToken;
            
             return response()->json([
                 'message' => 'User created successfully',
                 'user' => $user,
+                'token'=> $token
             ]);
         } catch (ValidationException $e) {
             // Handle validation exception
@@ -45,4 +47,38 @@ class RegisteredUserController extends Controller
             ], JsonResponse::HTTP_CONFLICT);
         }
     }
+    public function login(Request $request): JsonResponse
+    {
+        try {
+            $request->validate([
+                'email' => ['required', 'string', 'email', 'max:255'],
+                'password' => ['required', 'string'],
+            ]);
+
+            if (!Auth::attempt($request->only('email', 'password'))) {
+                return response()->json(['error' => 'Invalid credentials'], JsonResponse::HTTP_UNAUTHORIZED);
+            }
+
+            $user = $request->user();
+            $token = $user->createToken($user->email)->plainTextToken;
+
+            return response()->json([
+                'message' => 'Login successful',
+                'user' => $user,
+                'token' => $token,
+            ]);
+        } catch (ValidationException $e) {
+            // Handle validation exception
+            return response()->json([
+                'error' => $e->validator->errors()->first(),
+            ], JsonResponse::HTTP_BAD_REQUEST);
+        }
+    }
+    public function logout()
+{
+    $user = Auth::user();
+    $user->tokens()->delete();
+    
+    return response()->json(['message' => 'Logout successful'], 200);
+}
 }
