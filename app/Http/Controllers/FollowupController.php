@@ -160,9 +160,11 @@ class FollowupController extends Controller
 
     public function deletedFollowups($userId): JsonResponse
     {
-        $deletedFollowups = Followup::onlyTrashed()->get();
+        $doneFollowups = Followup::where('user_id', $userId) 
+        ->where('status', 'pending')->get();
 
-        return response()->json(['deleted_followups' => $deletedFollowups]);
+        return response()->json(['pending_followups' => $doneFollowups]);
+
     }
 
 
