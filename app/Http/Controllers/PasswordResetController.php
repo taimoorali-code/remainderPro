@@ -47,47 +47,51 @@ class PasswordResetController extends Controller
     //     ], 200);
     // }
     public function send_reset_password_email(Request $request)
-{
-    try {
-        $request->validate([
-            'email' => 'required|email',
-        ]);
-
-        $email = $request->email;
-        $user = User::where('email', $email)->first();
-
-        if (!$user) {
-            return response()->json(['message' => 'Email not found'], 404);
+    {
+        try {
+            $request->validate([
+                'email' => 'required|email',
+            ]);
+    
+            $email = $request->email;
+            $user = User::where('email', $email)->first();
+            $token= rand(10000, 99999);
+    
+            if (!$user) {
+                return response()->json(['message' => 'Email not found'], 404);
+            }
+    
+            $existingToken = PasswordReset::where('email', $email)->first();
+    
+            if ($existingToken) {
+                // Update the existing token
+                $existingToken->update([
+                    'token' => rand(10000, 99999),
+                    'created_at' => Carbon::now(),
+                ]);
+            } else {
+                // Generate a new token
+                PasswordReset::create([
+                    'email' => $email,
+                    'token' => rand(10000, 99999),
+                    'created_at' => Carbon::now(),
+                ]);
+            }
+    
+            // Mail send
+            Mail::send('reset', ['token' => $token], function ($message) use ($email) {
+                $message->subject('Reset Your Password');
+                $message->to($email);
+            });
+    
+            return response([
+                'message' => 'Password Reset Email Sent. Check Your Email.',
+                'status' => 'success',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'An error occurred while sending the password reset email.'], 500);
         }
-
-        // Generate 5-digit token
-        $token = rand(10000, 99999);
-
-        DB::beginTransaction();
-
-        PasswordReset::create([
-            'email' => $request->email,
-            'token' => $token,
-            'created_at' => Carbon::now(),
-        ]);
-
-        // Mail send
-        Mail::send('reset', ['token' => $token], function ($message) use ($email) {
-            $message->subject('Reset Your Password');
-            $message->to($email);
-        });
-
-        DB::commit();
-
-        return response([
-            'message' => 'Password Reset Email Sent. Check Your Email.',
-            'status' => 'success',
-        ], 200);
-    } catch (\Exception $e) {
-        DB::rollback();
-        return response()->json(['error' => 'An error occurred while sending the password reset email.'], 500);
     }
-}
 
 
     // public function reset(Request $request, $token)
