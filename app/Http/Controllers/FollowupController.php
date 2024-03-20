@@ -153,7 +153,7 @@ class FollowupController extends Controller
     public function doneFollowups($userId): JsonResponse
     {
         $doneFollowups = Followup::where('user_id', $userId) 
-        ->where('status', 'success')->get();
+        ->where('status', 0)->get();
 
         return response()->json(['done_followups' => $doneFollowups]);
     }
@@ -161,7 +161,7 @@ class FollowupController extends Controller
     public function deletedFollowups($userId): JsonResponse
     {
         $doneFollowups = Followup::where('user_id', $userId) 
-        ->where('status', 'pending')->get();
+        ->where('status', 2)->get();
 
         return response()->json(['pending_followups' => $doneFollowups]);
 
