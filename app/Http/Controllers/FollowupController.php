@@ -50,9 +50,9 @@ class FollowupController extends Controller
         }
     
         // Additional details
-        $todayFollowups = $userFollowups->where('follow_date', today())->count();
-        $pastFollowups = $userFollowups->where('follow_date', '<', now())->count();
-        $tomorrowFollowups = $userFollowups->where('follow_date', Carbon::tomorrow())->count();
+        $todayFollowups = $userFollowups->where('follow_date', today());
+        $pastFollowups = $userFollowups->where('follow_date', '<', now());
+        $tomorrowFollowups = $userFollowups->where('follow_date', Carbon::tomorrow());
     
         return response()->json([
             'user_followups' => $userFollowups,
@@ -138,7 +138,7 @@ class FollowupController extends Controller
     
         $query = Followup::where('user_id', $userId) 
         ->where('status', $request->status)->get();  
-             
+
         if ($request->filled('from_date') && $request->filled('to_date')) {
             $toDate = Carbon::createFromFormat('Y-m-d', $request->input('to_date'))->addDay(1); // Add one day to the end date
             $query->whereBetween('follow_date', [$request->input('from_date'), $toDate]);
