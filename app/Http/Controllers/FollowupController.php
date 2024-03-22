@@ -121,13 +121,17 @@ class FollowupController extends Controller
     }
     public function filterFollowups(Request $request, $userId): JsonResponse
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'from_date' => ['date'],
             'to_date' => ['date', 'after_or_equal:from_date'],
             'country' => ['string'],
             'state' => ['string'],
             'city' => ['string'],
         ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 400);
+        }
     
         $query = Followup::where('user_id', $userId);
     
@@ -155,6 +159,7 @@ class FollowupController extends Controller
     
         return response()->json(['filtered_followups' => $filteredFollowups]);
     }
+    
     
     
     
