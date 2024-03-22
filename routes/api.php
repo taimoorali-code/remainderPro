@@ -61,3 +61,6 @@ Route::post('/uploadprofileimage/{id}', [UserController::class, 'uploadProfileIm
     Route::delete('/followup/delete/{id}', [FollowupController::class, 'destroy']); // Delete a follow-up
            
 // Route::post('followups', FollowupController::class);
+
+Route::post('/social-login', 'App\Http\Controllers\SocialAuthController@social_customer_login');
+

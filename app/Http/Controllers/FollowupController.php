@@ -122,25 +122,32 @@ class FollowupController extends Controller
     public function filterFollowups(Request $request, $userId): JsonResponse
     {
         $request->validate([
-            'from_date' => ['required', 'date'],
-            'to_date' => ['required', 'date', 'after_or_equal:from_date'],
-            'country' => ['required', 'string'],
-            'state' => ['required', 'string'],
-            'city' => ['required', 'string'],
+            'from_date' => ['date'],
+            'to_date' => ['date', 'after_or_equal:from_date'],
+            'country' => ['string'],
+            'state' => ['string'],
+            'city' => ['string'],
         ]);
     
-        $fromDate = $request->input('from_date');
-        $toDate = $request->input('to_date');
-        $country = $request->input('country');
-        $state = $request->input('state');
-        $city = $request->input('city');
+        $query = Followup::where('user_id', $userId);
     
-        $filteredFollowups = Followup::where('user_id', $userId)
-            ->whereBetween('follow_date', [$fromDate, $toDate])
-            ->where('country', $country)
-            ->where('state', $state)
-            ->where('city', $city)
-            ->get();
+        if ($request->filled('from_date') && $request->filled('to_date')) {
+            $query->whereBetween('follow_date', [$request->input('from_date'), $request->input('to_date')]);
+        }
+    
+        if ($request->filled('country')) {
+            $query->where('country', $request->input('country'));
+        }
+    
+        if ($request->filled('state')) {
+            $query->where('state', $request->input('state'));
+        }
+    
+        if ($request->filled('city')) {
+            $query->where('city', $request->input('city'));
+        }
+    
+        $filteredFollowups = $query->get();
     
         if ($filteredFollowups->isEmpty()) {
             return response()->json(['message' => 'No follow-ups found for the specified user and criteria'], 404);
@@ -148,6 +155,7 @@ class FollowupController extends Controller
     
         return response()->json(['filtered_followups' => $filteredFollowups]);
     }
+    
     
     
     public function doneFollowups($userId): JsonResponse
