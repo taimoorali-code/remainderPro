@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 // use Illuminate\Http\JsonResponse;
 // use App\Models\Followup;
@@ -42,8 +43,8 @@ class FollowupController extends Controller
 
     public function show($userId): JsonResponse
     {
-        $userFollowups = Followup::where('user_id', $userId)->get(); // Add ->get() to execute the query
-    
+        $userFollowups = Followup::where('user_id', $userId) 
+        ->where('status', 0)->get();    
         if ($userFollowups->isEmpty()) {
             return response()->json(['message' => 'Follow-ups not found for the specified user'], 404);
         }
@@ -75,6 +76,8 @@ class FollowupController extends Controller
             'state' => ['required', 'string'],
             'city' => ['required', 'string'],
         ]);
+        $followDate = Carbon::createFromFormat('Y-m-d', $data['follow_date'])->format('d-m-Y');
+        $data['follow_date'] = $followDate;
 
         $followup = Followup::create($data);
 
@@ -133,10 +136,12 @@ class FollowupController extends Controller
             return response()->json(['errors' => $validator->errors()], 400);
         }
     
-        $query = Followup::where('user_id', $userId);
-    
+        $query = Followup::where('user_id', $userId) 
+        ->where('status', $request->status)->get();  
+             
         if ($request->filled('from_date') && $request->filled('to_date')) {
-            $query->whereBetween('follow_date', [$request->input('from_date'), $request->input('to_date')]);
+            $toDate = Carbon::createFromFormat('Y-m-d', $request->input('to_date'))->addDay(1); // Add one day to the end date
+            $query->whereBetween('follow_date', [$request->input('from_date'), $toDate]);
         }
     
         if ($request->filled('country')) {
@@ -166,7 +171,7 @@ class FollowupController extends Controller
     public function doneFollowups($userId): JsonResponse
     {
         $doneFollowups = Followup::where('user_id', $userId) 
-        ->where('status', 0)->get();
+        ->where('status', 1)->get();
 
         return response()->json(['done_followups' => $doneFollowups]);
     }
