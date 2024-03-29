@@ -25,6 +25,7 @@ class Followup extends Model
         'country',
         'state',
         'city',
+        'switch'
     ];
 
     protected $dates = ['deleted_at']; // Add this line to specify the deleted_at column as a date

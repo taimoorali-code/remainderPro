@@ -21,6 +21,7 @@ class User extends Authenticatable
         'country',
         'dial_code',
         'verification_code',
+        'is_admin',
         'phone',
         'image',
         'password',
