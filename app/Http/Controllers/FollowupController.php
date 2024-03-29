@@ -61,16 +61,21 @@ public function show(Request $request, $userId): JsonResponse
 
     $todayFollowups = Followup::where('user_id', $userId)
                                 ->whereDate('follow_date', $today)
+                                ->orWhere('status', 0)
+
                                 ->orderBy('follow_date', 'asc')
                                 ->get();
 
    $tomorrowFollowups = Followup::where('user_id', $userId)
         ->whereDate('follow_date', $tomorrow)
+        ->orWhere('status', 0)
+
         ->orderBy('follow_date', 'asc')
         ->get();
 
     $pastFollowups = Followup::where('user_id', $userId)
                                 ->where('follow_date', '<', $today)
+                                ->orWhere('status', 0)
                                 ->orderBy('follow_date', 'desc')
                                 ->get();
 
@@ -136,7 +141,7 @@ public function show(Request $request, $userId): JsonResponse
                 'country' => 'string|max:255',
                 'state' => 'string|max:255',
                 'city' => 'string|max:255',
-                'required',Rule::in(['true', 'false']),
+               'switch'=> 'required',Rule::in(['true', 'false']),
             ]);
     
             $followup->update($request->all());
