@@ -27,6 +27,10 @@ class Followup extends Model
         'city',
         'switch'
     ];
+    public function histories()
+    {
+        return $this->hasMany(FollowupHistory::class);
+    }
 
     protected $dates = ['deleted_at']; // Add this line to specify the deleted_at column as a date
 }

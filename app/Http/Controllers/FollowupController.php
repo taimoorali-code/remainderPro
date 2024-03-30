@@ -5,6 +5,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Followup;
+use App\Models\FollowupHistory;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Carbon\Carbon;
@@ -124,37 +125,45 @@ public function show(Request $request, $userId): JsonResponse
     } catch (\Exception $e) {
         return response()->json(['error' => 'An error occurred while updating the follow-up.'], 500);
     }
+}
+   public function update(Request $request, $id): JsonResponse
+{
+    try {
+        $followup = Followup::findOrFail($id);
+
+        $request->validate([
+            'name' => 'string|max:255',
+            'phone' => 'string|max:255',
+            'address' => 'string|max:255',
+            'note' => 'string',
+            'dial_code' => 'string',
+            'status' => 'integer', // Change to integer data type validation
+            'follow_date' => 'date',
+            'country' => 'string|max:255',
+            'state' => 'string|max:255',
+            'city' => 'string|max:255',
+            'switch' => ['required'],
+        ]);
+
+        // Ensure 'status' field is cast to integer before updating
+        $changes = $followup->getChanges();
+        $history = new FollowupHistory([
+            'changes' => $changes,
+        ]);
+        $followup->histories()->save($history);
+
+        $followup->update($request->all());
+
+        return response()->json(['message' => 'Follow-up updated successfully', 'followup' => $followup]);
+    } catch (ModelNotFoundException $e) {
+        return response()->json(['error' => 'Follow-up not found.'], 404);
+    } catch (ValidationException $e) {
+        return response()->json(['error' => $e->getMessage()], 422);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'An error occurred while updating the follow-up.'], 500);
     }
-    public function update(Request $request, $id): JsonResponse
-    {
-        try {
-            $followup = Followup::findOrFail($id);
-    
-            $request->validate([
-                'name' => 'string|max:255',
-                'phone' => 'string|max:255',
-                'address' => 'string|max:255',
-                'note' => 'string',
-                'dial_code' => 'string',
-                'status' => 'string|max:255',
-                'follow_date' => 'date',
-                'country' => 'string|max:255',
-                'state' => 'string|max:255',
-                'city' => 'string|max:255',
-               'switch'=> 'required',Rule::in(['true', 'false']),
-            ]);
-    
-            $followup->update($request->all());
-    
-            return response()->json(['message' => 'Follow-up updated successfully', 'followup' => $followup]);
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'Follow-up not found.'], 404);
-        } catch (ValidationException $e) {
-            return response()->json(['error' => $e->getMessage()], 422);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'An error occurred while updating the follow-up.'], 500);
-        }
-    }
+}
+
     public function destroy($id): JsonResponse
     {
         $followup = Followup::findOrFail($id);
