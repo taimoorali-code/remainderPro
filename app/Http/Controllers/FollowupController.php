@@ -5,7 +5,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Followup;
-use App\Models\FollowupHistory;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Carbon\Carbon;
@@ -125,7 +124,7 @@ public function show(Request $request, $userId): JsonResponse
     } catch (\Exception $e) {
         return response()->json(['error' => 'An error occurred while updating the follow-up.'], 500);
     }
-}
+    }
    public function update(Request $request, $id): JsonResponse
 {
     try {
@@ -146,13 +145,10 @@ public function show(Request $request, $userId): JsonResponse
         ]);
 
         // Ensure 'status' field is cast to integer before updating
-        $changes = $followup->getChanges();
-        $history = new FollowupHistory([
-            'changes' => $changes,
-        ]);
-        $followup->histories()->save($history);
+        $requestData = $request->all();
+        $requestData['status'] = intval($requestData['status']);
 
-        $followup->update($request->all());
+        $followup->update($requestData);
 
         return response()->json(['message' => 'Follow-up updated successfully', 'followup' => $followup]);
     } catch (ModelNotFoundException $e) {
