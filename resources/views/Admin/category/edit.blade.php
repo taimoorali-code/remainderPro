@@ -1,59 +1,128 @@
 @extends('layouts.admin')
 
-
 @section('content')
-<div class="card">
-    <div class="card-header">
-      <h4>Update Categories</h4>
-    </div>
-    <div class="card-body">
-        <form method="POST" action="{{url('update-category/'.$category->id)}}" enctype="multipart/form-data"> 
-            @csrf
-            @method('PUT')
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label for="">Name</label>
-                    <input type="text" class="form-control border border-dark p-2" value="{{ $category->name }}" name="name">
-                </div>    
-                <div class="col-md-6 mb-3">
-                    <label for="">Slug</label>
-                    <input type="text" class="form-control border border-dark p-2" value="{{ $category->slug }}" name="slug">
-                </div> 
-                <div class="col-md-12 mb-3">
-                    <label for="">Description</label>
-                    <textarea name="description"  rows="3" class="form-control p-2 border border-dark" >{{ $category->description }} </textarea>   
-                </div>    
-                <div class="col-md-6 mb-3">
-                    <label for="">Status</label>
-                    <input type="checkbox"  class="border border-dark p-2" name="status" {{ $category->status == "1" ? "checked" : "" }}>
-                </div>    
-                <div class="col-md-6 mb-3">
-                    <label for="">Popular</label>
-                    <input type="checkbox"  class="border border-dark p-2" name="popular" {{ $category->popular == "1" ? "checked" : ""}}>
-                </div>    
-                <div class="col-md-6 mb-3">
-                    <label for="">Meta Title</label>
-                    <input type="text" class="form-control border border-dark p-2" name="meta_title" value="{{ $category->meta_title }}">
-                </div>    
-                <div class="col-md-12 mb-3">
-                    <label for="">Meta Keyword</label>
-                    <textarea name="meta_keyword"  rows="3" class="form-control border border-dark p-2"> {{ $category->meta_keyword }}</textarea> 
-                </div>    
-                <div class="col-md-12 mb-3">
-                    <label for="">Meta Description</label>
-                    <textarea name="meta_description"  rows="3" class="form-control border border-dark p-2"> {{ $category->description }}</textarea> 
-                </div>    
-                @if ($category->image)
-                    <img src="{{asset('upload/category/'.$category->image)}}" class="w-25 h-25" alt="no image">
-                @endif
-                <div class="col-md-12 mb-3">
-                   <input type="file" name="image"  class="form-control border border-dark p-2" value="{{ $category->image }}">
-                </div>    
-                <div class="col-md-12 mb-3">
-                   <button type="submit" class="btn btn-primary">Submit</button>
-                </div>    
-            </div>    
-        </form>
-    </div>
-  </div>
-@endsection
+    <style>
+        .btn-custom {
+            color: black;
+            font-weight: bold;
+        }
+    </style>
+
+    <div class="card">
+        <div class="card-header">
+            <h4>Update Categories</h4>
+        </div>
+        <div class="card-body">
+            <div class="row justify-content-end mb-1">
+                <div class="col-auto">
+                    <button type="button" class="btn btn-danger">Export</button>
+                </div>
+                <div class="col-auto">
+                    <button type="button" class="btn btn-warning">Filter</button>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-6 text-right">
+                        <h6 style="margin-bottom: 10px;">Date: {{ $category->created_at->format('Y-m-d') }}</h6>
+                        <h6 style="margin-bottom: 10px;">Name: {{ $category->name }}</h6>
+                        <h6 style="margin-bottom: 10px;">Email: {{ $category->email }}</h6>
+                    </div>
+                    <div class="col-6 text-left">
+                        <h6 style="margin-bottom: 10px;">Country: {{ $category->country }}</h6>
+                        <h6 style="margin-bottom: 10px;">Mobile: {{ $category->dial_code }} {{ $category->phone }}</h6>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container mt-3">
+                <div class="row justify-content-center mb-1">
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-success" id="dashboardBtn">Dashboard</button>
+                    </div>
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-warning" id="doneDeleteBtn">Done/Delete</button>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="container mt-3">
+                <!-- Display category data -->
+                {{-- <h6 style="margin-bottom: 10px;">Date: {{ $category->created_at->format('Y-m-d') }}</h6> --}}
+
+                <!-- Cards to be shown/hidden -->
+                <div class="row justify-content-center">
+                    <div class="col-md-7" id="dashboardCard" style="display: none;">
+                        @foreach ($user_followups as $followup)
+                            <div class="card shadow-sm rounded mt-2">
+                                <div class="card-body">
+                                    <h6 class="card-title">FollowUp Date: {{ $followup['follow_date'] }}</h6>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <p>Name: {{ $followup['name'] }}</p>
+                                            <p>Phone: {{ $followup['dial_code'] }}{{ $followup['phone'] }}</p>
+                                            <p>Status: Pending</p>
+                                            <p style="color: black;
+                                            font-weight: bold;">Create Date: {{ $followup['created_at'] }}</p>
+
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p>Address: {{ $followup['address'] }}</p>
+                                            {{-- <p>Phone: {{ $followup['phone'] }}</p> --}}
+                                        </div>
+                                    </div>
+
+                                    <!-- Add other attributes you want to display -->
+                                </div>
+                            </div>
+                        @endforeach
+
+                    </div>
+                </div>
+
+                <div class="row justify-content-center">
+                    <div class="col-md-7" id="doneDeleteCard" style="display: none;">
+                        @foreach ($done_followups as $followup)
+                            <div class="card shadow-sm rounded mt-2">
+                                <div class="card-body">
+                                    <h6 class="card-title">FollowUp Date: {{ $followup['follow_date'] }}</h6>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <p>Name: {{ $followup['name'] }}</p>
+                                            <p>Phone: {{ $followup['dial_code'] }}{{ $followup['phone'] }}</p>
+                                            <p>Status: Completed</p>
+                                            <p style="color: black;
+                                            font-weight: bold;">Create Date: {{ $followup['created_at'] }}</p>
+
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p>Address: {{ $followup['address'] }}</p>
+                                            {{-- <p>Phone: {{ $followup['phone'] }}</p> --}}
+                                        </div>
+                                    </div>
+
+                                    <!-- Add other attributes you want to display -->
+                                </div>
+                            </div>
+                        @endforeach
+
+                    </div>
+                </div>
+            </div>
+
+
+            <script>
+                document.getElementById('dashboardBtn').addEventListener('click', function() {
+                    document.getElementById('dashboardCard').style.display = 'block';
+                    document.getElementById('doneDeleteCard').style.display = 'none';
+                });
+
+                document.getElementById('doneDeleteBtn').addEventListener('click', function() {
+                    document.getElementById('dashboardCard').style.display = 'none';
+                    document.getElementById('doneDeleteCard').style.display = 'block';
+                });
+            </script>
+        @endsection

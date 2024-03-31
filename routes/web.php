@@ -44,7 +44,7 @@ Route::get('/', function () {
 
     // Categories Routes
 
-    Route::get('/admin/users',[AdminUserController::class, 'user'])->name('admin.user');
+    Route::get('/admin/users',[CategoriesController::class, 'index'])->name('admin.user');
     Route::get('/admin/subscriber',[AdminUserController::class, 'subscriber'])->name('admin.subscriber');
     Route::get('/admin/feedback',[AdminUserController::class, 'feedback'])->name('admin.feedback');
 

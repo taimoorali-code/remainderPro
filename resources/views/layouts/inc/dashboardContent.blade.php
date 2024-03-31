@@ -38,19 +38,37 @@
           <table class="table table-bordered">
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
+                <th>Date</th>
+                <th >Name</th>
+                <th >Email</th>
+                <th>Country</th>
+                <th>Mobile</th>
+                {{-- <th>Status</th> --}}
+                {{-- <th>Edit</th> --}}
               </tr>
             </thead>
             <tbody id="table-body">
               <!-- Dummy data for the table -->
               <!-- New User Today -->
-              <tr id="newUserTable" style="display: none;">
-                <td>1</td>
-                <td>John Doe</td>
-                <td>johndoe@example.com</td>
+              @foreach($users as $item)
+              <tr id="newUserTable" style="display: none;" >
+                <td >{{$item->created_at}}</td>
+                <td >{{$item->name}}</td>
+                <td >{{$item->email}}</td>
+                <td >{{$item->country}}</td>
+                <td >{{$item->phone}}</td>
+                {{-- <td >{{$item->phone}}</td> --}}
+
+
+                {{-- <td class="col-md-3 ">
+                    <img src="{{asset('upload/category/'.$item->image)}}" class="w-50 "  style="height: 100px !important" alt="Image Not Found">
+                </td> --}}
+                {{-- <td>
+                    <a class="btn btn-primary" href="{{url('edit-category/'.$item->id)}}">Edit</a>
+                     <a  class="btn btn-danger" href="{{url('delete-category/'.$item->id)}}">Delete</a> 
+                </td> --}}
               </tr>
+              @endforeach
               <!-- Subscriber Today -->
               <tr id="subscriberTable" style="display: none;">
                 <td>2</td>
