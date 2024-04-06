@@ -53,34 +53,37 @@
 
                 <!-- Cards to be shown/hidden -->
                 <div class="row justify-content-center">
-                    <div class="col-md-7" id="dashboardCard" style="display: none;">
+                    <div class="col-md-7" id="dashboardCard">
                         @foreach ($user_followups as $followup)
-                            <div class="card shadow-sm rounded mt-2">
+                        <div class="card shadow-sm rounded mt-2">
+                            <form action="{{ route('user.edit', ['id' => $followup['id'], 'followup_id' => $followup['followup_id']]) }}" method="GET">
+                                @csrf <!-- CSRF protection for the form -->
+                                <input type="hidden" name="user_id" value="{{ $followup['user_id'] }}"> <!-- Add hidden input for user ID -->
+                
                                 <div class="card-body">
                                     <h6 class="card-title">FollowUp Date: {{ $followup['follow_date'] }}</h6>
-
                                     <div class="row">
                                         <div class="col-md-6">
                                             <p>Name: {{ $followup['name'] }}</p>
                                             <p>Phone: {{ $followup['dial_code'] }}{{ $followup['phone'] }}</p>
                                             <p>Status: Pending</p>
-                                            <p style="color: black;
-                                            font-weight: bold;">Create Date: {{ $followup['created_at'] }}</p>
-
+                                            <p style="color: black; font-weight: bold;">Create Date: {{ $followup['created_at'] }}</p>
                                         </div>
                                         <div class="col-md-6">
                                             <p>Address: {{ $followup['address'] }}</p>
-                                            {{-- <p>Phone: {{ $followup['phone'] }}</p> --}}
                                         </div>
                                     </div>
-
                                     <!-- Add other attributes you want to display -->
+                
+                                    <!-- Change submit button to a regular button -->
+                                    <button type="submit" class="btn btn-primary">Edit</button>
                                 </div>
-                            </div>
+                            </form>
+                        </div>
                         @endforeach
-
                     </div>
                 </div>
+                
 
                 <div class="row justify-content-center">
                     <div class="col-md-7" id="doneDeleteCard" style="display: none;">
@@ -125,4 +128,6 @@
                     document.getElementById('doneDeleteCard').style.display = 'block';
                 });
             </script>
+          
+            
         @endsection

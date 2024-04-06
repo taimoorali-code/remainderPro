@@ -2,7 +2,7 @@
 
 
  @section('content')
- @include('layouts.inc.dashboardContent', ['users' => $users])
+ {{-- @include('layouts.inc.dashboardContent', ['users' => $users]) --}}
  @endsection 
 
 

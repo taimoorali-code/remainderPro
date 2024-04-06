@@ -45,6 +45,11 @@ class CategoriesController extends Controller
         $category->save();
         return redirect('/categories')->with('status', "Category Added Successfully");
     }
+    public function edituser(Request $request, $id){
+        $followup = Followup::find($id);
+        return view('Admin.category.edituser', compact('followup'));
+    }
+    
 
     public function edit($id)
     {
@@ -87,32 +92,20 @@ class CategoriesController extends Controller
     }
 
 
-    public function update(Request $request,  $id)
-    {
-        $category = Category::find($id);
-        if ($request->hasFile('image')) {
-            $path  = 'upload/category/' . $category->image;
-            if (File::exists($path)) {
-                File::delete($path);
-            }
-            $file =  $request->File('image');
-            $ext = $file->getClientOriginalExtension();
-            $fileName = time() . '.' . $ext;
-            $file->move('upload/category', $fileName);
-            $category->image = $fileName;
-        }
-        $category->name = $request->input('name');
-        $category->slug = $request->input('slug');
-        $category->description = $request->input('description');
-        $category->status = $request->input('status')   == True ? '1' : '0';
-        $category->popular = $request->input('popular')  == True ? '1' : '0';
-        $category->meta_title = $request->input('meta_title');
-        $category->meta_keyword = $request->input('meta_keyword');
-        $category->meta_description = $request->input('meta_description');
-
-        $category->update();
-        return redirect('/categories')->with('status', "Category Updated Successfully");
+    public function update(Request $request, $id) {
+        $followup = Followup::findOrFail($id);
+        
+        $validatedData = $request->validate([
+            'name' => 'required|string',
+            'phone' => 'required|string',
+            // Add validation rules for other fields as needed
+        ]);
+    
+        $followup->update($validatedData);
+    
+        return redirect()->route('followup.index')->with('success', 'Followup updated successfully!');
     }
+    
 
     public function delete($id)
     {

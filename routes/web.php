@@ -51,8 +51,10 @@ Route::get('/', function () {
     Route::get('/add-category','App\Http\Controllers\Admin\CategoriesController@add');
     Route::post('insert-category' , 'App\Http\Controllers\Admin\CategoriesController@insert');
     Route::get('edit-category/{id}',[CategoriesController::class , 'edit']);
-    Route::put('update-category/{id}',[CategoriesController::class , 'update']);
+    Route::put('update-category/{id}',[CategoriesController::class , 'update'])->name('follow.update');
     Route::get('delete-category/{id}',[CategoriesController::class , 'delete']);
+    Route::get('/users/edit/{id}', [CategoriesController::class , 'edituser'])->name('user.edit');
+
     
     
     // Product Routes

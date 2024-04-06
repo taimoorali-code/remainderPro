@@ -127,7 +127,9 @@ public function show(Request $request, $userId): JsonResponse
         return response()->json(['error' => 'An error occurred while updating the follow-up.'], 500);
     }
     }
-  public function update(Request $request, $id): JsonResponse
+
+
+public function update(Request $request, $id): JsonResponse
 {
     try {
         $followup = Followup::findOrFail($id);
@@ -152,15 +154,18 @@ public function show(Request $request, $userId): JsonResponse
 
         $followup->update($requestData);
 
-        // Serialize changes array before storing in the database
-        $changes = $followup->getChanges();
-        $serializedChanges = serialize($changes);
+        // Check if switch is false before adding to history
+        if ($requestData['isEdit']) {
+            // Serialize changes array before storing in the database
+            $changes = $followup->getChanges();
+            $serializedChanges = serialize($changes);
 
-        $history = new FollowupHistory([
-            'followup_id' => $followup->id,
-            'changes' => $serializedChanges,
-        ]);
-        $history->save();
+            $history = new FollowupHistory([
+                'followup_id' => $followup->id,
+                'changes' => $serializedChanges,
+            ]);
+            $history->save();
+        }
 
         return response()->json(['message' => 'Follow-up updated successfully', 'followup' => $followup]);
     } catch (ModelNotFoundException $e) {
@@ -171,6 +176,7 @@ public function show(Request $request, $userId): JsonResponse
         return response()->json(['error' => $e->getMessage()], 500);
     }
 }
+
  // Import DB facade for raw query
 
 public function followupHistory(Request $request, $followupId): JsonResponse
@@ -228,11 +234,20 @@ public function followupHistory(Request $request, $followupId): JsonResponse
 
     $query = Followup::where('user_id', $userId)
         ->where('status', $request->status); // Apply status condition here
-
-    if ($request->filled('from_date') && $request->filled('to_date')) {
-        $toDate = Carbon::createFromFormat('Y-m-d', $request->to_date->addDay()); // Add one day to the end date
+        
+        
+  if ($request->filled('from_date') && $request->filled('to_date')) {
+    $toDate = Carbon::createFromFormat('Y-m-d', $request->to_date);
+    if ($request->filled('create')) {
+        $query->where(function ($query) use ($request, $toDate) {
+            $query->whereBetween('follow_date', [$request->from_date, $toDate])
+                ->orWhereBetween('created_at', [$request->from_date, $toDate]);
+        });
+    } else {
         $query->whereBetween('follow_date', [$request->from_date, $toDate]);
     }
+}
+
    
 
     if ($request->filled('country')) {
