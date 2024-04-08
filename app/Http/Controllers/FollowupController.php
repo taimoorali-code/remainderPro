@@ -128,7 +128,9 @@ public function show(Request $request, $userId): JsonResponse
     }
     }
 
-
+public function data(){
+    echo "hello world";
+}
 public function update(Request $request, $id): JsonResponse
 {
     try {
