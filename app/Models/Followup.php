@@ -18,6 +18,7 @@ class Followup extends Model
         'user_id',
         'phone',
         'dial_code',
+        'notification_date',
         'address',
         'note',
         'status',

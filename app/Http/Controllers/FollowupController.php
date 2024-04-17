@@ -128,9 +128,7 @@ public function show(Request $request, $userId): JsonResponse
     }
     }
 
-public function data(){
-    echo "hello world";
-}
+
 public function update(Request $request, $id): JsonResponse
 {
     try {
@@ -144,6 +142,7 @@ public function update(Request $request, $id): JsonResponse
             'dial_code' => 'string',
             'status' => 'integer',
             'follow_date' => 'date',
+            'notification_date' => 'date', // Add validation rule for notification_date
             'country' => 'string|max:255',
             'state' => 'string|max:255',
             'city' => 'string|max:255',
@@ -153,6 +152,11 @@ public function update(Request $request, $id): JsonResponse
         // Ensure 'status' field is cast to integer before updating
         $requestData = $request->all();
         $requestData['status'] = intval($requestData['status']);
+
+        // Update notification_date if notification is received and a valid date is provided
+        if ($requestData['notification'] && $requestData['notification_date']) {
+            $followup->notification_date = $requestData['notification_date'];
+        }
 
         $followup->update($requestData);
 
@@ -178,6 +182,7 @@ public function update(Request $request, $id): JsonResponse
         return response()->json(['error' => $e->getMessage()], 500);
     }
 }
+
 
  // Import DB facade for raw query
 
@@ -242,8 +247,8 @@ public function followupHistory(Request $request, $followupId): JsonResponse
     $toDate = Carbon::createFromFormat('Y-m-d', $request->to_date);
     if ($request->filled('create')) {
         $query->where(function ($query) use ($request, $toDate) {
-            $query->whereBetween('follow_date', [$request->from_date, $toDate])
-                ->orWhereBetween('created_at', [$request->from_date, $toDate]);
+            $query->whereBetween('created_at', [$request->from_date, $toDate]);
+                // ->orWhereBetween('created_at', [$request->from_date, $toDate]);
         });
     } else {
         $query->whereBetween('follow_date', [$request->from_date, $toDate]);
